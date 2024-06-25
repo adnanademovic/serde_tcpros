@@ -50,7 +50,7 @@ mod tests {
         assert_eq!(6, header.len());
         assert_eq!("/meow", header.get("topic").unwrap());
         assert_eq!("0", header.get("tcp_nodelay").unwrap());
-        assert_eq!(include_str!("pose_message_definition.txt"),
+        assert_eq!(&include_str!("pose_message_definition.txt").replace("\r", ""),
                    header.get("message_definition").unwrap());
         assert_eq!("geometry_msgs/Pose", header.get("type").unwrap());
         assert_eq!("e45d45a5a1ce597b249e23fb30fc871f",
@@ -65,7 +65,7 @@ mod tests {
         assert_eq!(6, header.len());
         assert_eq!("/meow", header.get("topic").unwrap());
         assert_eq!("1", header.get("latching").unwrap());
-        assert_eq!(include_str!("pose_message_definition.txt"),
+        assert_eq!(&include_str!("pose_message_definition.txt").replace("\r", ""),
                    header.get("message_definition").unwrap());
         assert_eq!("geometry_msgs/Pose", header.get("type").unwrap());
         assert_eq!("e45d45a5a1ce597b249e23fb30fc871f",
