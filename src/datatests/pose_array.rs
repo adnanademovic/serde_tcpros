@@ -85,7 +85,7 @@ mod tests {
         assert_eq!(6, header.len());
         assert_eq!("/xax", header.get("topic").unwrap());
         assert_eq!("0", header.get("tcp_nodelay").unwrap());
-        assert_eq!(include_str!("pose_array_message_definition.txt"),
+        assert_eq!(&include_str!("pose_array_message_definition.txt").replace("\r", ""),
                    header.get("message_definition").unwrap());
         assert_eq!("geometry_msgs/PoseArray", header.get("type").unwrap());
         assert_eq!("916c28c5764443f268b296bb671b9d97",
@@ -101,7 +101,7 @@ mod tests {
         assert_eq!(6, header.len());
         assert_eq!("/xax", header.get("topic").unwrap());
         assert_eq!("1", header.get("latching").unwrap());
-        assert_eq!(include_str!("pose_array_message_definition.txt"),
+        assert_eq!(&include_str!("pose_array_message_definition.txt").replace("\r", ""),
                    header.get("message_definition").unwrap());
         assert_eq!("geometry_msgs/PoseArray", header.get("type").unwrap());
         assert_eq!("916c28c5764443f268b296bb671b9d97",
