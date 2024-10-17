@@ -137,6 +137,17 @@ impl<R> Deserializer<R>
             .chain_err(|| ErrorKind::EndOfBuffer)?;
         String::from_utf8(buffer).chain_err(|| ErrorKind::BadStringData)
     }
+
+    #[inline]
+    fn get_byte_buf(&mut self) -> Result<Vec<u8>> {
+        let length = self.pop_length()?;
+        let mut buffer = vec![0; length as usize];
+        self.reader
+            .read_exact(&mut buffer)
+            .chain_err(|| ErrorKind::EndOfBuffer)?;
+        self.length -= length;
+        Ok(buffer)
+    }
 }
 
 macro_rules! impl_nums {
@@ -238,6 +249,9 @@ impl<'de, 'a, R: io::Read> de::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
         where V: de::Visitor<'de>
     {
+        // Note: this function is not working and prevents deserialization of uint8[] into &[u8]
+        // To get this optimization we'd need to specialize the deserializer for the case where we
+        // have referenced data
         self.deserialize_seq(visitor)
     }
 
@@ -245,7 +259,10 @@ impl<'de, 'a, R: io::Read> de::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
         where V: de::Visitor<'de>
     {
-        self.deserialize_seq(visitor)
+        // Note: this formulation allows bulk deserialization of u8[] into Vec<u8>
+        // Which is massively faster than deserialize_seq() that must iteratively deserialize each element
+        let bytes = self.get_byte_buf()?;
+        visitor.visit_byte_buf(bytes)
     }
 
     #[inline]
@@ -280,6 +297,7 @@ impl<'de, 'a, R: io::Read> de::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
         where V: de::Visitor<'de>
     {
+        // Note: this is number of elements in seq, not number of bytes
         let len = self.pop_length()? as usize;
 
         struct Access<'a, R: io::Read + 'a> {

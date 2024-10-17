@@ -7,3 +7,4 @@ mod string;
 mod pose;
 mod pose_with_covariance;
 mod pose_array;
+mod sensor_msgs_image;
