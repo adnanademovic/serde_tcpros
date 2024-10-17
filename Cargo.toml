@@ -20,3 +20,18 @@ byteorder = "1.0.0"
 error-chain = "0.10.0"
 serde = "1.0.2"
 serde_derive = "1.0.2"
+
+[dev-dependencies]
+# Used as benchmarking framework
+# Run with `cargo bench --bench image_bench`
+criterion = { version = "0.5", features = ["html_reports"] }
+# Used to generate flamegraphs for profiling
+# Run with `cargo bench --bench image_bench -- --profile-time 5`
+# Files will be in target/criterion/<bench_name>/profile/flamegraph.svg
+pprof = { version = "0.13", features = ["criterion", "flamegraph"] }
+# Optimization demonstrated in benchmarks
+serde_bytes = "0.11"
+
+[[bench]]
+name = "image_bench"
+harness = false
